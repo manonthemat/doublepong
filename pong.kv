@@ -1,97 +1,64 @@
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
-from kivy.vector import Vector
-from kivy.clock import Clock
-from random import randint
-from time import sleep
+#:kivy 1.7
 
+<PongGame>:
+    ball: pong_ball
+    player1: player_left_up
+    player2: player_right_up
+    player3: player_left_down
+    player4: player_right_down
 
-class PongGame(Widget):
-    ball = ObjectProperty(None)
-    player1 = ObjectProperty(None)
-    player2 = ObjectProperty(None)
-    player3 = ObjectProperty(None)
-    player4 = ObjectProperty(None)
+    canvas:
+        Rectangle:
+            pos: self.center_x - 5, 0
+            size: 10, self.height
 
-    def serve_ball(self, vel=(4, 0)):
-        self.ball.center = self.center
-#        self.ball.velocity = Vector(4, 0).rotate(randint(0, 360))
-        self.ball.velocity = vel
+    Label:
+        font_size: 80
+        center_x: root.width / 4
+        top: root.top - 50
+        text: str(root.player1.score)
 
-    def update(self, dt):
-        self.ball.move()
+    Label:
+        font_size: 80
+        center_x: root.width * 3 / 4
+        top: root.top - 50
+        text: str(root.player2.score)
 
-        # bounce of paddles
-        # ToDo - fix this: ball doesn't bounce off a second time when paddle kept in same position
-        self.player1.bounce_ball(self.ball)
-        self.player2.bounce_ball(self.ball)
-        self.player3.bounce_ball(self.ball)
-        self.player4.bounce_ball(self.ball)
+    PongBall:
+        id: pong_ball
+        center: self.parent.center
 
-        # bounce off top and bottom
-        if (self.ball.y < 0) or (self.ball.top > self.height):
-            self.ball.velocity_y *= -1
+    PongPaddle:
+        id: player_left_up
+        x: root.x
+        center_y: root.y + self.height
 
-        # went of to a side to score a point?
-        # ToDo - fix this: player2 scores when left side of ball touches left window, but player1 scores when the left corner of ball touches the right side of the window, thus making it harder to score...
-        if self.ball.x < self.x:
-            self.playerScored(self.player2)
-            self.serve_ball(vel=(4, 0))
-        if self.ball.x > self.width:
-            self.playerScored(self.player1)
-            self.serve_ball(vel=(-4, 0))
+    PongPaddle
+        id: player_right_up
+        x: root.width - self.height
+        center_y: root.y + self.height
 
-    def playerScored(self, player):
-        player.score += 1
-        sleep(1)
-        if player.score > 3:
-            exit(0)
+    PongPaddle:
+        id: player_left_down
+        x: root.x
+        center_y: root.height - self.height
 
-    def on_touch_move(self, touch):
-        # ToDo - fix this: take paddle size into consideration
-        if touch.x < self.width / 3:
-            if touch.y < self.height / 2:
-                self.player1.center_y = touch.y
-            else:
-                self.player3.center_y = touch.y
-        if touch.x > self.width - self.width / 3:
-            if touch.y < self.height / 2:
-                self.player2.center_y = touch.y
-            else:
-                self.player4.center_y = touch.y
+    PongPaddle:
+        id: player_right_down
+        x: root.width - self.height
+        center_y: root.height - self.height
 
+<PongBall>:
+    size: 50, 50
+    canvas:
+        Ellipse:
+            pos: self.pos
+            size: self.size
 
-class PongBall(Widget):
-    velocity_x = NumericProperty(0)
-    velocity_y = NumericProperty(0)
-
-    velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-    def move(self):
-        self.pos = Vector(*self.velocity) + self.pos
-
-
-class PongPaddle(Widget):
-    score = NumericProperty(0)
-
-    def bounce_ball(self, ball):
-        if self.collide_widget(ball):
-            vx, vy = ball.velocity
-            offset = (ball.center_y - self.center_y) / (self.height / 2)
-            bounced = Vector(-1 * vx, vy)
-            vel = bounced * 1.1
-            ball.velocity = vel.x, vel.y + offset
-
-
-class PongApp(App):
-    def build(self):
-        game = PongGame()
-        game.serve_ball()
-        Clock.schedule_interval(game.update, 1.0/60.0)
-        return game
-
-
-if __name__ == "__main__":
-    PongApp().run()
+<PongPaddle>:
+    size: 25, 100
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
