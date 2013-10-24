@@ -44,10 +44,9 @@ class PongGame(Widget):
     def playerScored(self, player):
         player.score += 1
         sleep(1)
-        if player.score > 7:
+        if player.score > 3:
             Clock.unschedule(self.update)
-            self.winlabel = Label(size_hint=(None, None), text='Winning!', font_size=140, color=player.Color)
-            print(player.Color)
+            self.winlabel = Label(size_hint=(None, None), text=player.Teamname + ' wins!', font_size=140, color=player.Color)
             self.winlabel.pos = (self.width / 2, self.height / 2)
             self.add_widget(self.winlabel)
             #sleep(3)
@@ -91,10 +90,12 @@ class PongPaddle(Widget):
 
 class PongPaddleBlue(PongPaddle):
     Color = [0, 0, 1, 1]
+    Teamname = 'Blue'
 
 
 class PongPaddleRed(PongPaddle):
     Color = [1, 0, 0, 1]
+    Teamname = 'Red'
 
 
 class PongApp(App):
