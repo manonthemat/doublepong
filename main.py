@@ -16,7 +16,6 @@ class PongGame(Widget):
 
     def serve_ball(self, vel=(4, 0)):
         self.ball.center = self.center
-#        self.ball.velocity = Vector(4, 0).rotate(randint(0, 360))
         self.ball.velocity = vel
 
     def update(self, dt):
