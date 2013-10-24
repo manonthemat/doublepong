@@ -1,5 +1,6 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -22,7 +23,6 @@ class PongGame(Widget):
         self.ball.move()
 
         # bounce of paddles
-        # ToDo - fix this: ball doesn't bounce off a second time when paddle kept in same position
         self.player1.bounce_ball(self.ball)
         self.player2.bounce_ball(self.ball)
         self.player3.bounce_ball(self.ball)
@@ -44,8 +44,14 @@ class PongGame(Widget):
     def playerScored(self, player):
         player.score += 1
         sleep(1)
-        if player.score > 3:
-            exit(0)
+        if player.score > 7:
+            Clock.unschedule(self.update)
+            self.winlabel = Label(size_hint=(None, None), text='Winning!', font_size=140, color=player.Color)
+            print(player.Color)
+            self.winlabel.pos = (self.width / 2, self.height / 2)
+            self.add_widget(self.winlabel)
+            #sleep(3)
+            #exit(0)
 
     def on_touch_move(self, touch):
         # ToDo - fix this: take paddle size into consideration
@@ -81,6 +87,14 @@ class PongPaddle(Widget):
             bounced = Vector(-1 * vx, vy)
             vel = bounced * 1.1
             ball.velocity = vel.x, vel.y + offset
+
+
+class PongPaddleBlue(PongPaddle):
+    Color = [0, 0, 1, 1]
+
+
+class PongPaddleRed(PongPaddle):
+    Color = [1, 0, 0, 1]
 
 
 class PongApp(App):
