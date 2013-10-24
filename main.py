@@ -33,8 +33,7 @@ class PongGame(Widget):
             self.ball.velocity_y *= -1
 
         # went of to a side to score a point?
-        # ToDo - fix this: player2 scores when left side of ball touches left window, but player1 scores when the left corner of ball touches the right side of the window, thus making it harder to score...
-        if self.ball.x < self.x:
+        if self.ball.x + self.ball.size[0] < self.x:
             self.playerScored(self.player2)
             self.serve_ball(vel=(4, 0))
         if self.ball.x > self.width:
